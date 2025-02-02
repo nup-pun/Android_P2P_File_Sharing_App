@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -42,7 +41,13 @@ fun SendScreen(
         }
     }
 
+    fun reset() {
+        discoveredDevices.clear()
+        fileViewModel.resetFileTransferStatus()
+    }
+
     fun searchDevices() {
+        reset()
         networkService.startDiscovery { serviceInfo ->
             if (discoveredDevices.none {
                 it.serviceName == serviceInfo.serviceName
@@ -109,7 +114,7 @@ fun SendScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     LinearProgressIndicator(progress = copyProgress / 100f, modifier = Modifier.fillMaxWidth())
-                    Text(text = "Copy Progress: $copyProgress%", style = MaterialTheme.typography.bodyMedium)
+                    Text(text = "Transfer        Progress: $copyProgress%", style = MaterialTheme.typography.bodyMedium)
                 }
             } else {
                 Text(text = "Loading...", style = MaterialTheme.typography.bodyMedium)

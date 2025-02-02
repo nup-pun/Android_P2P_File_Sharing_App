@@ -1,11 +1,11 @@
-package com.xianfeng.wjcscx
+package com.xianfeng.wjcscx.utility
 
 import java.io.File
 import java.security.MessageDigest
 
 object ChecksumUtil {
     fun calculateChecksum(file: File): String {
-        val buffer = ByteArray(1024)
+        val buffer = ByteArray(4096)
         val messageDigest = MessageDigest.getInstance("SHA-256")
         file.inputStream().use { input ->
             var bytesRead: Int

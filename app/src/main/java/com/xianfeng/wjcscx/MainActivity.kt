@@ -9,7 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.xianfeng.wjcscx.screen.AppNavigationScreen
+import com.xianfeng.wjcscx.navigation.AppNavigationScreen
 import com.xianfeng.wjcscx.ui.theme.WjcscxTheme
 
 class MainActivity : ComponentActivity() {
@@ -72,5 +72,6 @@ class MainActivity : ComponentActivity() {
         networkService.stopService()
     }
 }
+
 
 

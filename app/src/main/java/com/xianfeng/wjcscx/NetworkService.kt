@@ -49,8 +49,8 @@ class NetworkService(private val context: Context) {
         if (registrationListener != null) return  // Already registered
 
         registrationListener = object : NsdManager.RegistrationListener {
-            override fun onServiceRegistered(NsdServiceInfo: NsdServiceInfo) {
-                Log.d("NetworkService", "Service registered: ${NsdServiceInfo.serviceName}")
+            override fun onServiceRegistered(nsdServiceInfo: NsdServiceInfo) {
+                Log.d("NetworkService", "Service registered: ${nsdServiceInfo.serviceName}")
             }
 
             override fun onRegistrationFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {
@@ -131,7 +131,7 @@ class NetworkService(private val context: Context) {
         nsdManager.resolveService(service, resolveListener)
     }
 
-    fun stopDiscovery() {
+    private fun stopDiscovery() {
         discoveryListener?.let {
             nsdManager.stopServiceDiscovery(it)
             discoveryListener = null

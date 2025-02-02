@@ -1,4 +1,4 @@
-package com.xianfeng.wjcscx.screen
+package com.xianfeng.wjcscx.navigation
 
 import com.xianfeng.wjcscx.FileViewModel
 import com.xianfeng.wjcscx.NetworkService
@@ -25,10 +25,9 @@ fun AppNavigationScreen(
 ) {
     val navController = rememberNavController()
     val context = LocalContext.current
-    NavHost(navController = navController, startDestination = "mainScreen") {
-
+    NavHost(navController = navController, startDestination = MainScreen.route) {
         composable(
-            route = "mainScreen",
+            route = MainScreen.route,
             exitTransition = {
                 slideOutOfContainer(
                     AnimatedContentTransitionScope.SlideDirection.Left,
@@ -43,14 +42,14 @@ fun AppNavigationScreen(
             }
         ) {
             MainScreen(
-                onSendClick = { navController.navigate("sendScreen") },
-                onReceiveClick = { navController.navigate("receiveScreen") },
-                onReceivedFilesClick = { navController.navigate("fileScreen") }
+                onSendClick = { navController.navigate(SendScreen.route) },
+                onReceiveClick = { navController.navigate(ReceiveScreen.route) },
+                onReceivedFilesClick = { navController.navigate(FileScreen.route) }
             )
         }
 
         composable(
-            route = "sendScreen",
+            route = SendScreen.route,
             exitTransition = {
                 slideOutOfContainer(
                     AnimatedContentTransitionScope.SlideDirection.Right,
@@ -73,7 +72,7 @@ fun AppNavigationScreen(
         }
 
         composable(
-            route = "receiveScreen",
+            route = ReceiveScreen.route,
             exitTransition = {
                 slideOutOfContainer(
                     AnimatedContentTransitionScope.SlideDirection.Right,
@@ -91,7 +90,7 @@ fun AppNavigationScreen(
         }
 
         composable(
-            route = "fileScreen",
+            route = FileScreen.route,
             exitTransition = {
                 slideOutOfContainer(
                     AnimatedContentTransitionScope.SlideDirection.Right,

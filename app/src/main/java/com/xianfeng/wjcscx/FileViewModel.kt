@@ -17,16 +17,13 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.BufferedWriter
 import java.io.File
 import java.io.IOException
-import java.io.OutputStreamWriter
 import java.net.Socket
 
 data class FileWithThumbnail(val file: File, val thumbnail: Bitmap?)
@@ -36,14 +33,12 @@ class FileViewModel(application: Application, private val networkService: Networ
     val fvmReady = _fvmReady.asStateFlow()
 
     companion object {
-        const val MAX_FILES = 20  // Maximum number of files to be selected
+        const val MAX_FILES = 30  // Maximum number of files to be selected
     }
 
     private val folderName = "MyFolder"
 
     var receivingStatus by mutableStateOf("Waiting for sender...")
-        private set
-    var receivedFileName by mutableStateOf<String?>(null)
         private set
     var selectedFiles by mutableStateOf<List<Uri>>(emptyList())
         private set
@@ -54,10 +49,16 @@ class FileViewModel(application: Application, private val networkService: Networ
         selectedFiles = files
     }
 
+    fun resetFileTransferStatus() {
+        _isLoading.value = false
+        _fileTransferCompleted.value = false
+        receivingStatus = "Waiting for the sender.."
+    }
+
     private val _copyProgress = MutableStateFlow(0)
     val copyProgress: StateFlow<Int> get() = _copyProgress
 
-    fun setCopyProg(progress: Int) {
+    private fun setCopyProg(progress: Int) {
         _copyProgress.value = progress
     }
 
@@ -139,17 +140,16 @@ class FileViewModel(application: Application, private val networkService: Networ
         viewModelScope.launch(Dispatchers.IO) {
             fileReceiver.receiveFiles(networkService.serverSocket!!, folder) { file ->
                 viewModelScope.launch(Dispatchers.Main) {
-                    receivedFileName = file.name
                     receivingStatus = "File received: ${file.name}"
                     loadFiles() // Update the list of files after receiving a new file
                 }
             }
         }
+
     }
 
     fun startReceiving() {
-        receivedFileName = null
-        receivingStatus = "Waiting for sender..."
+        receivingStatus = "Waiting for sender.."
         val name = "receiver_${System.currentTimeMillis()}"
         uniqueServiceName = name
         networkService.registerService(name)
@@ -171,7 +171,7 @@ class FileViewModel(application: Application, private val networkService: Networ
             } catch (e: IOException) {
                 Log.e("FileViewModel", "Error sending files", e)
             } finally {
-                withContext(Dispatchers.Main) {
+                withContext(Dispatchers.IO) {
                     _isLoading.value = false
                     _fileTransferCompleted.value = true
                     try {
@@ -193,12 +193,6 @@ class FileViewModel(application: Application, private val networkService: Networ
             }
         }
         return file
-    }
-
-    private fun calculateOverallProgress(index: Int, progress: Int, totalFiles: Int): Int {
-        val fileProgress = progress / 100.0f
-        val overallProgress = ((index + fileProgress) / totalFiles) * 100
-        return overallProgress.toInt()
     }
 
     private fun getFileName(uri: Uri, contentResolver: ContentResolver): String {
